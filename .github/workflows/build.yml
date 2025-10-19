@@ -83,6 +83,9 @@ jobs:
       - name: Generate luci.mk patch
         id: gen_luci_patch
         uses: Jackie264/actions-repo/gen-luci-mk-patch@latest
+        with:
+          packages_dir: "feeds/packages feeds/luci"
+          output_dir: "patches"
           
       - name: Build luci-app-adguardhome
         run: |
