@@ -1,7 +1,7 @@
 name: Build luci-app-adguardhome
 
 permissions:
-  contents: write   # 需要写权限才能发布 Release
+  contents: write
 
 on:
   push:
@@ -111,10 +111,11 @@ jobs:
         id: generate
         run: |
           build_time=$(date +"%Y-%m-%d %H:%M:%S %Z")
+          commit_sha=$(git rev-parse --short HEAD || echo "n/a")
           {
-            echo "| Package | Version | Build Time |"
-            echo "|---------|---------|------------|"
-            echo "| ${{ steps.parse.outputs.pkg }} | ${{ steps.parse.outputs.ver }} | $build_time |"
+            echo "| Package | Version (full) | Build Time | Commit |"
+            echo "|---------|-----------------|------------|--------|"
+            echo "| ${{ steps.parse.outputs.pkg }} | ${{ steps.parse.outputs.ver_full }} | $build_time | $commit_sha |"
           } > release.txt
           echo "status=success" >> $GITHUB_OUTPUT
 
@@ -123,7 +124,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ steps.parse.outputs.ver }}
-          name: luci-app-adguardhome v${{ steps.parse.outputs.ver }}
+          name: luci-app-adguardhome v${{ steps.parse.outputs.ver_full }}
           body_path: release.txt
           files: output/*.ipk
           
