@@ -81,7 +81,7 @@ jobs:
           #--------------------------------------end_patches--------------------------------------------
       - name: Generate luci.mk patch
         id: gen_luci_patch
-        uses: Jackie264/actions-repo/.github/actions/gen-luci-mk-patch@v1.0.0
+        uses: Jackie264/actions-repo/gen-luci-mk-patch@v1.0.0
           
       - name: Build luci-app-adguardhome
         run: |
@@ -113,7 +113,7 @@ jobs:
 
       - name: Parse version from ipk
         id: parse
-        uses: Jackie264/actions-repo/.github/actions/parse-ipk-file@v1.0.0
+        uses: Jackie264/actions-repo/parse-ipk-file@v1.0.0
         with:
           file: release-ipk/luci-app-adguardhome*.ipk
 
