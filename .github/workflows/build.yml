@@ -107,10 +107,30 @@ jobs:
         with:
           file: output/luci-app-adguardhome*.ipk
 
+      - name: Generate release.txt (Markdown table)
+        id: generate
+        run: |
+          build_time=$(date +"%Y-%m-%d %H:%M:%S %Z")
+          {
+            echo "| Package | Version | Build Time |"
+            echo "|---------|---------|------------|"
+            echo "| ${{ steps.parse.outputs.pkg }} | ${{ steps.parse.outputs.ver }} | $build_time |"
+          } > release.txt
+          echo "status=success" >> $GITHUB_OUTPUT
+
       - name: Upload to GitHub Release
-        if: success() && startsWith(github.ref, 'refs/tags/')
+        if: steps.generate.outputs.status == 'success'
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ steps.parse.outputs.ver }}
           name: luci-app-adguardhome v${{ steps.parse.outputs.ver }}
+          body_path: release.txt
           files: output/*.ipk
+          
+      - name: Keep only latest 3 releases
+        uses: dev-drprasad/delete-older-releases@v0.3.3
+        with:
+          keep_latest: 3
+          delete_tags: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
