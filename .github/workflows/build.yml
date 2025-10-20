@@ -96,16 +96,26 @@ jobs:
           echo "status=success" >> $GITHUB_OUTPUT
         
       - name: Collect artifacts
+        id: collect
         if: steps.compile.outputs.status == 'success'
         run: |
           mkdir -p output
           find sdk/bin/packages/ -name "luci-app-adguardhome*.ipk" -exec cp {} output/ \;
+          echo "status=success" >> $GITHUB_OUTPUT
+
+      - name: Normalize IPK filenames
+        if: steps.collect.outputs.status == 'success'
+        id: rename
+        uses: Jackie264/actions-repo/rename-ipk@latest
+        with:
+          target_dir: output
+          mode: strip
 
       - name: Parse version from ipk
         id: parse
         uses: Jackie264/actions-repo/parse-ipk-file@latest
         with:
-          file: output/luci-app-adguardhome*.ipk
+          file: ${{ steps.rename.outputs.files }}
 
       - name: Generate release.txt (Markdown table)
         id: generate
@@ -126,7 +136,7 @@ jobs:
           tag_name: v${{ steps.parse.outputs.ver }}
           name: ${{ steps.parse.outputs.ver }}
           body_path: release.txt
-          files: output/*.ipk
+          files: ${{ steps.rename.outputs.files }}
           
       - name: Keep only latest 3 releases
         uses: dev-drprasad/delete-older-releases@v0.3.4
