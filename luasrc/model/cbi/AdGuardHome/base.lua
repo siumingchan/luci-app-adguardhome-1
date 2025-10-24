@@ -37,7 +37,7 @@ else
 	local version=uci:get("AdGuardHome","AdGuardHome","version")
 	local testtime=fs.stat(binpath,"mtime")
 	if testtime~=tonumber(binmtime) or version==nil then
-		local tmp=luci.sys.exec(binpath.." --version | grep -m 1 -E 'version [0-9.]+' -o|sed 's/version /v/g'")
+		local tmp=luci.sys.exec(binpath.." --version | grep -m 1 -E 'version [0-9.]+' -o | sed 's/version /v/g'")
 		version=string.sub(tmp, 1)
 		if version=="" then version="core error" end
 		uci:set("AdGuardHome","AdGuardHome","version",version)
